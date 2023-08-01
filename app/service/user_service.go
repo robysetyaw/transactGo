@@ -17,16 +17,16 @@ func (s *UserService) GetUserByUsername(username string) (*model.User,error) {
 	return s.repo.FindByUsername(username)
 }
 
-func (s *UserService) UpdateUser(username string, user *model.User) error {
-	 isExist,err := s.repo.FindByUsername(username)
-	if isExist == nil {
+func (s *UserService) UpdateUser(username string, userRequest *model.User) error {
+	 user,err := s.repo.FindByUsername(username)
+	if user == nil {
 		return err
 	}	
 
-	isExist.Username = user.Username
-	isExist.Password = user.Password
+	user.Username = userRequest.Username
+	user.Password = userRequest.Username
 
-	return s.repo.Save(isExist)
+	return s.repo.Save(user)
 }
 
 func (s *UserService) DeleteUser(username string) error {
