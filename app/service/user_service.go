@@ -22,9 +22,17 @@ func (s *UserService) UpdateUser(username string, user *model.User) error {
 	if isExist == nil {
 		return err
 	}	
-	return s.repo.Save(user)
+
+	isExist.Username = user.Username
+	isExist.Password = user.Password
+
+	return s.repo.Save(isExist)
 }
 
-func (s *UserService) DeleteUser(user *model.User) error {
+func (s *UserService) DeleteUser(username string) error {
+	user , err := s.repo.FindByUsername(username)
+	if user == nil {
+		return err
+	}
 	return s.repo.Delete(user)
 }
