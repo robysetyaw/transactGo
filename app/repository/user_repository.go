@@ -2,6 +2,7 @@ package repository
 
 import (
 	"encoding/json"
+	"errors"
 	"os"
 	"transactgo/app/model"
 )
@@ -41,7 +42,7 @@ func (r *userRepository) FindByUsername(username string) (*model.User,error) {
 			return &user,nil
 		}
 	}
-	return nil,nil
+	return nil, errors.New("user not found")
 }
 
 func (r *userRepository) Save(user *model.User) error {

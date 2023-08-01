@@ -26,7 +26,7 @@ func NewUserHandler(s *service.UserService, r *gin.Engine) *UserHandler {
 
 func (h *UserHandler) GetUserByUsername(c *gin.Context) {
 	username := c.Param("username")
-	user := h.service.GetUserByUsername(username)
+	user,_ := h.service.GetUserByUsername(username)
 	if user == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
@@ -53,7 +53,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 
 func (h *UserHandler) DeleteUser(c *gin.Context) {
 	username := c.Param("username")
-	user := h.service.GetUserByUsername(username)
+	user,_ := h.service.GetUserByUsername(username)
 	if user == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
