@@ -6,6 +6,7 @@ import (
 	"transactgo/app/service"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserHandler struct {
@@ -67,6 +68,13 @@ func (h *UserHandler) AddUser(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+        return
+    }
+	user.Password = string(hashedPassword)
     if err := h.service.AddUser(&user); err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add user"})
         return
