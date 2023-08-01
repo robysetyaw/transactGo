@@ -3,6 +3,8 @@ package service
 import (
 	"transactgo/app/model"
 	"transactgo/app/repository"
+
+	"github.com/google/uuid"
 )
 
 type UserService struct {
@@ -26,7 +28,7 @@ func (s *UserService) UpdateUser(username string, userRequest *model.User) error
 	user.Username = userRequest.Username
 	user.Password = userRequest.Username
 
-	return s.repo.Save(user)
+	return s.repo.Update(user)
 }
 
 func (s *UserService) DeleteUser(username string) error {
@@ -42,6 +44,6 @@ func (s *UserService) AddUser (userRequest *model.User) error {
 	if user != nil {
 	   return err
 	   }	
-	
+	userRequest.ID = uuid.New().String()
    return s.repo.Save(userRequest)
 }

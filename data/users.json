@@ -1,12 +1,1 @@
-[
-    {
-        "id": "1",
-        "username": "user1",
-        "password": "password1"
-    },
-    {
-        "id": "2",
-        "username": "user2",
-        "password": "password2"
-    }
-]
+[{"id":"1","username":"user1","password":"password1"},{"id":"2","username":"user2","password":"password2"},{"id":"19b61051-aa51-497d-97a6-af3a2bc73a54","username":"iborr","password":"password2"}]

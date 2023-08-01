@@ -9,8 +9,9 @@ import (
 
 type UserRepository interface {
 	FindByUsername(username string) (*model.User, error)
-	Save(user *model.User) error
+	Update(user *model.User) error
 	Delete(user *model.User) error
+	Save(user *model.User) error
 }
 
 type userRepository struct {
@@ -45,7 +46,7 @@ func (r *userRepository) FindByUsername(username string) (*model.User,error) {
 	return nil, errors.New("user not found")
 }
 
-func (r *userRepository) Save(user *model.User) error {
+func (r *userRepository) Update(user *model.User) error {
 	// Update the user in the slice
 	for i, u := range r.users {
 		if u.ID == user.ID {
@@ -77,6 +78,38 @@ func (r *userRepository) Delete(user *model.User) error {
 			r.users = append(r.users[:i], r.users[i+1:]...)
 			break
 		}
+	}
+
+	// Open the JSON file
+	file, err := os.OpenFile("data/users.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Encode the users slice back into the file
+	err = json.NewEncoder(file).Encode(r.users)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *userRepository) Save(user *model.User) error {
+	// Check if the user exists in the slice
+	found := false
+	for i, u := range r.users {
+		if u.ID == user.ID {
+			r.users[i] = *user
+			found = true
+			break
+		}
+	}
+
+	// If the user does not exist, add it to the slice
+	if !found {
+		r.users = append(r.users, *user)
 	}
 
 	// Open the JSON file
