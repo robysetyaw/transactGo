@@ -11,8 +11,15 @@ type UserHandler struct {
 	service *service.UserService
 }
 
-func NewUserHandler(s *service.UserService) *UserHandler {
-	return &UserHandler{service: s}
+func NewUserHandler(s *service.UserService, r *gin.Engine) *UserHandler {
+	handler := &UserHandler{service: s}
+
+	// Set up routes
+	r.GET("/users/:username", handler.GetUserByUsername)
+	// r.PUT("/users/:username", handler.UpdateUser)
+	// r.DELETE("/users/:username", handler.DeleteUser)
+
+	return handler
 }
 
 func (h *UserHandler) GetUserByUsername(c *gin.Context) {
