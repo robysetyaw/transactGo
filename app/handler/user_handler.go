@@ -19,7 +19,7 @@ func NewUserHandler(s *service.UserService, r *gin.Engine) *UserHandler {
 	r.GET("/users/:username", handler.GetUserByUsername)
 	r.PUT("/users/:username", handler.UpdateUser)
 	r.DELETE("/users/:username", handler.DeleteUser)
-
+	r.POST("/users",handler.AddUser)
 	return handler
 }
 
@@ -58,4 +58,18 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "User deleted"})
+}
+
+func (h *UserHandler) AddUser(c *gin.Context) {
+
+    var user model.User
+    if err := c.ShouldBindJSON(&user); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+    if err := h.service.AddUser(&user); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add user"})
+        return
+    }
+    c.JSON(http.StatusOK, user)
 }
