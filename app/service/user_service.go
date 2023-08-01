@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"transactgo/app/model"
 	"transactgo/app/repository"
 
@@ -41,9 +42,14 @@ func (s *UserService) DeleteUser(username string) error {
 
 func (s *UserService) AddUser (userRequest *model.User) error {
 	user,err := s.repo.FindByUsername(userRequest.Username)
+	if err != nil {
+		// Return the error if there was an error when trying to find the user
+		return err
+	}
 	if user != nil {
-	   return err
-	   }	
+		// Return a custom error if a user with the same username already exists
+		return errors.New("a user with this username already exists")
+	}	
 	userRequest.ID = uuid.New().String()
    return s.repo.Save(userRequest)
 }
