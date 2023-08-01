@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	// "transactgo/app/model"
+	"transactgo/app/model"
 	"transactgo/app/service"
 
 	"github.com/gin-gonic/gin"
@@ -35,33 +36,18 @@ func (h *UserHandler) GetUserByUsername(c *gin.Context) {
 
 func (h *UserHandler) UpdateUser(c *gin.Context) {
     username := c.Param("username")
-    existingUser := h.service.GetUserByUsername(username)
-    if existingUser == nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-        return
-    }
 
-    // Define a new struct to hold the update request
-    type UpdateRequest struct {
-        Username string `json:"username"`
-        Password string `json:"password"`
-    }
-
-    var update UpdateRequest
-    if err := c.ShouldBindJSON(&update); err != nil {
+    var user model.User
+    if err := c.ShouldBindJSON(&user); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
 
-    // Update the user's username and password
-    existingUser.Username = update.Username
-    existingUser.Password = update.Password
-
-    if err := h.service.UpdateUser(existingUser); err != nil {
+    if err := h.service.UpdateUser(username, &user); err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
         return
     }
-    c.JSON(http.StatusOK, existingUser)
+    c.JSON(http.StatusOK, user)
 }
 
 

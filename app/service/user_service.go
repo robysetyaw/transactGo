@@ -17,7 +17,7 @@ func (s *UserService) GetUserByUsername(username string) *model.User {
 	return s.repo.FindByUsername(username)
 }
 
-func (s *UserService) UpdateUser(user *model.User) error {
+func (s *UserService) UpdateUser(username string, user *model.User) error {
 	return s.repo.Save(user)
 }
 
