@@ -29,11 +29,8 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		token, err := jwt.Parse(bearerToken[1], func(token *jwt.Token) (interface{}, error) {
-			// Add validation key logic here, for instance fetching your secret key from environment variable
-			// return []byte("YourSecretKey"), nil
-
-			// We're not adding the validation logic here for simplicity
-			return nil, nil
+			// Return secret key directly
+			return []byte("secret.puppey"), nil
 		})
 
 		if err != nil {
