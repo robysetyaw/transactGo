@@ -2,12 +2,13 @@ package handler
 
 import (
 	"net/http"
+	"transactgo/app/middleware"
 	"transactgo/app/model"
 	"transactgo/app/model/response"
 	"transactgo/app/service"
 
-	"github.com/gin-gonic/gin"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
@@ -18,9 +19,9 @@ func NewUserHandler(s *service.UserService, r *gin.Engine) *UserHandler {
 	handler := &UserHandler{service: s}
 
 	// Set up routes
-	r.GET("/users/:username", handler.GetUserByUsername)
-	r.PUT("/users/:username", handler.UpdateUser)
-	r.DELETE("/users/:username", handler.DeleteUser)
+	r.GET("/users/:username", middleware.AuthMiddleware(),handler.GetUserByUsername)
+	r.PUT("/users/:username", middleware.AuthMiddleware(),handler.UpdateUser)
+	r.DELETE("/users/:username",middleware.AuthMiddleware(), handler.DeleteUser)
 	r.POST("/users",handler.AddUser)
 	r.POST("/login", handler.Login)
 	return handler
