@@ -6,6 +6,7 @@ import (
 	"transactgo/app/repository"
 
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct {
@@ -46,6 +47,11 @@ func (s *UserService) AddUser (userRequest *model.User) error {
 		// Return a custom error if a user with the same username already exists
 		return errors.New("a user with this username already exists")
 	}	
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userRequest.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+    }
 	userRequest.ID = uuid.New().String()
+	userRequest.Password = string(hashedPassword)
    return s.repo.Save(userRequest)
 }

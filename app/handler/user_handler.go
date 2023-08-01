@@ -7,7 +7,6 @@ import (
 	"transactgo/app/service"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type UserHandler struct {
@@ -32,7 +31,7 @@ func (h *UserHandler) GetUserByUsername(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
-	c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK"," ", user, " "))
+	c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK","Successfully get user", user, " "))
 }
 
 func (h *UserHandler) UpdateUser(c *gin.Context) {
@@ -87,14 +86,8 @@ func (h *UserHandler) AddUser(c *gin.Context) {
 		return
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
-        return
-    }
-	user.Password = string(hashedPassword)
     if err := h.service.AddUser(&user); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add user"})
+        c.JSON(http.StatusInternalServerError, response.NewResponse(http.StatusInternalServerError, "Failed to add user", nil, nil, err.Error()))
         return
     }
     c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK","Successfully added user", user, " "))
