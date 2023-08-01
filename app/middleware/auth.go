@@ -3,6 +3,7 @@ package middleware
 import (
 	"net/http"
 	"strings"
+	"transactgo/app/model/response"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -12,18 +13,14 @@ func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Authorization header is missing",
-			})
+			c.JSON(http.StatusUnauthorized, response.NewResponse(http.StatusUnauthorized, "Unauthorized", nil, nil, "Unauthorized"))
 			c.Abort()
 			return
 		}
 
 		bearerToken := strings.Split(authHeader, " ")
 		if len(bearerToken) != 2 {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "Invalid token format",
-			})
+			c.JSON(http.StatusBadRequest, response.NewResponse(http.StatusBadRequest, "Invalid token", nil, nil, "Invalid token"))
 			c.Abort()
 			return
 		}
@@ -34,17 +31,13 @@ func AuthMiddleware() gin.HandlerFunc {
 		})
 
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Invalid token",
-			})
+			c.JSON(http.StatusUnauthorized, response.NewResponse(http.StatusUnauthorized, "Unauthorized", nil, nil, "Unauthorized"))
 			c.Abort()
 			return
 		}
 
 		if !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Invalid token",
-			})
+			c.JSON(http.StatusUnauthorized, response.NewResponse(http.StatusUnauthorized, "Unauthorized", nil, nil, "Unauthorized"))
 			c.Abort()
 			return
 		}
