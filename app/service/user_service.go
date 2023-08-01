@@ -36,3 +36,12 @@ func (s *UserService) DeleteUser(username string) error {
 	}
 	return s.repo.Delete(user)
 }
+
+func (s *UserService) AddUser (userRequest *model.User) error {
+	user,err := s.repo.FindByUsername(userRequest.Username)
+	if user != nil {
+	   return err
+	   }	
+	
+   return s.repo.Save(userRequest)
+}
