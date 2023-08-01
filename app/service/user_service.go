@@ -55,3 +55,20 @@ func (s *UserService) AddUser (userRequest *model.User) error {
 	userRequest.Password = string(hashedPassword)
    return s.repo.Save(userRequest)
 }
+
+func (s *UserService) Authenticate(username, password string) (*model.User, error) {
+    user, err := s.repo.FindByUsername(username)
+    if err != nil {
+        return nil, err
+    }
+
+    if user == nil {
+        return nil, errors.New("user not found")
+    }
+
+    if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+        return nil, errors.New("invalid password")
+    }
+
+    return user, nil
+}
