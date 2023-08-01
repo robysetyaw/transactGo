@@ -9,6 +9,8 @@ import (
 )
 
 func main() {
+	// Set up Gin server
+	r := gin.Default()
 	// Create UserRepository
 	userRepo, err := repository.NewUserRepository()
 	if err != nil {
@@ -19,15 +21,8 @@ func main() {
 	userService := service.NewUserService(userRepo)
 
 	// Create UserHandler
-	userHandler := handler.NewUserHandler(userService)
-
-	// Set up Gin server
-	r := gin.Default()
-
-	// Set up routes
-	r.GET("/users/:username", userHandler.GetUserByUsername)
-	// Add other routes (e.g., POST, PUT, DELETE) as needed
-
+	handler.NewUserHandler(userService, r)
+	
 	// Start the server
 	r.Run() // listen and serve on 0.0.0.0:8080
 }
