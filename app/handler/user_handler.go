@@ -65,10 +65,27 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 func (h *UserHandler) AddUser(c *gin.Context) {
 
     var user model.User
-    if err := c.ShouldBindJSON(&user); err != nil {
+	if err := c.ShouldBindJSON(&user); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
+
+	errors := make(map[string]string)
+
+	// validasi username
+	if len(user.Username) < 5 {
+		errors["username"] = "username must be 5 characters or more"
+	}
+
+	// validasi password
+	if len(user.Password) < 6 {
+		errors["password"] = "password must be 6 characters or more"
+	}
+
+	if len(errors) > 0 {
+		c.JSON(http.StatusBadRequest, response.NewResponse(http.StatusBadRequest, "Invalid input", errors, nil, ""))
+		return
+	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
