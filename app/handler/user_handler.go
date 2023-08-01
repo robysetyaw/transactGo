@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"transactgo/app/model"
+	"transactgo/app/model/response"
 	"transactgo/app/service"
 
 	"github.com/gin-gonic/gin"
@@ -31,7 +32,7 @@ func (h *UserHandler) GetUserByUsername(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK"," ", user, " "))
 }
 
 func (h *UserHandler) UpdateUser(c *gin.Context) {
@@ -47,7 +48,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
         return
     }
-    c.JSON(http.StatusOK, user)
+    c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK","User with username " + username + " has been updated" ,user, " "))
 }
 
 
@@ -58,7 +59,7 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "User deleted"})
+	c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK", "User with username " + username + " has been deleted", " "," "))
 }
 
 func (h *UserHandler) AddUser(c *gin.Context) {
@@ -79,5 +80,5 @@ func (h *UserHandler) AddUser(c *gin.Context) {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add user"})
         return
     }
-    c.JSON(http.StatusOK, user)
+    c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK","Successfully added user", user, " "))
 }
