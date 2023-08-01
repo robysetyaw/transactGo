@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	// "transactgo/app/model"
 	"transactgo/app/model"
 	"transactgo/app/service"
 
