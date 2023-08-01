@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"transactgo/app/model"
 	"transactgo/app/repository"
 )
@@ -18,6 +19,11 @@ func (s *UserService) GetUserByUsername(username string) *model.User {
 }
 
 func (s *UserService) UpdateUser(username string, user *model.User) error {
+	err, isExist := s.repo.FindByUsername(username)
+	if isExist == nil {
+		return err
+	}
+	
 	return s.repo.Save(user)
 }
 

@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepository interface {
-	FindByUsername(username string) *model.User
+	FindByUsername(username string) (*model.User, error)
 	Save(user *model.User) error
 	Delete(user *model.User) error
 }
@@ -35,13 +35,13 @@ func NewUserRepository() (UserRepository, error) {
 	return repo, nil
 }
 
-func (r *userRepository) FindByUsername(username string) *model.User {
+func (r *userRepository) FindByUsername(username string) (*model.User,error) {
 	for _, user := range r.users {
 		if user.Username == username {
-			return &user
+			return &user,nil
 		}
 	}
-	return nil
+	return nil,nil
 }
 
 func (r *userRepository) Save(user *model.User) error {
