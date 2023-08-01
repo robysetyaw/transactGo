@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"time"
 	"transactgo/app/middleware"
 	"transactgo/app/model"
 	"transactgo/app/model/response"
@@ -111,6 +112,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
         "username": user.Username,
+		"exp":      time.Now().Add(time.Hour * 10).Unix(),
     })
 
     // Sign and get the complete encoded token as a string using the secret
