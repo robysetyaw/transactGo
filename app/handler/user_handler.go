@@ -7,6 +7,7 @@ import (
 	"transactgo/app/service"
 
 	"github.com/gin-gonic/gin"
+	"github.com/dgrijalva/jwt-go"
 )
 
 type UserHandler struct {
@@ -21,6 +22,7 @@ func NewUserHandler(s *service.UserService, r *gin.Engine) *UserHandler {
 	r.PUT("/users/:username", handler.UpdateUser)
 	r.DELETE("/users/:username", handler.DeleteUser)
 	r.POST("/users",handler.AddUser)
+	r.POST("/login", handler.Login)
 	return handler
 }
 
@@ -91,4 +93,31 @@ func (h *UserHandler) AddUser(c *gin.Context) {
         return
     }
     c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK","Successfully added user", user, " "))
+}
+
+func (h *UserHandler) Login(c *gin.Context) {
+    var loginReq model.User
+    if err := c.ShouldBindJSON(&loginReq); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    user, err := h.service.Authenticate(loginReq.Username, loginReq.Password)
+    if err != nil {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+        return
+    }
+
+    token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+        "username": user.Username,
+    })
+
+    // Sign and get the complete encoded token as a string using the secret
+    tokenString, err := token.SignedString([]byte("secret.puppey"))
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
