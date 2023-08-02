@@ -1,0 +1,29 @@
+[
+    {
+        "id": "1",
+        "fromAccountNumber": "100001",
+        "toAccountNumber": "100002",
+        "amount": 100.00,
+        "timestamp": "2023-08-02T14:00:00Z",
+        "description": "Transfer to account 100002",
+        "txType": "transfer"
+    },
+    {
+        "id": "2",
+        "fromAccountNumber": "100002",
+        "toAccountNumber": "100001",
+        "amount": 50.00,
+        "timestamp": "2023-08-02T15:00:00Z",
+        "description": "Transfer to account 100001",
+        "txType": "transfer"
+    },
+    {
+        "id": "3",
+        "fromAccountNumber": "100001",
+        "toAccountNumber": "100002",
+        "amount": 200.00,
+        "timestamp": "2023-08-02T16:00:00Z",
+        "description": "Payment to merchant 1",
+        "txType": "payment"
+    }
+]
