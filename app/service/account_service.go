@@ -11,6 +11,7 @@ import (
 
 type AccountService interface {
 	FindByAccountNumber(accountNumber string) (*model.Account, error)
+	FindAllActive() []model.Account
 	Update(account *model.Account) error
 	Delete(account *model.Account) error
 	Save(account *model.Account) error
@@ -26,7 +27,9 @@ func NewAccountService(repo repository.AccountRepository) AccountService {
 	}
 }
 
-
+func (s *accountService) FindAllActive() []model.Account {
+	return s.repo.FindAllActive()
+}
 
 func (s *accountService) FindByAccountNumber(accountNumber string) (*model.Account, error) {
 	return s.repo.FindByAccountNumber(accountNumber)

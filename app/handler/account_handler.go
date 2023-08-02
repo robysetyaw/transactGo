@@ -17,13 +17,17 @@ func NewAccountHandler(accountService service.AccountService, r *gin.Engine) *Ac
 		accountService: accountService,
 	}
 	r.GET("/accounts/:accountNumber", h.GetAccount)
+	r.GET("/accounts", h.GetActiveAccounts)
 	r.POST("/accounts", h.CreateAccount)
 	r.PUT("/accounts/:accountNumber", h.UpdateAccount)
 	r.DELETE("/accounts/:accountNumber", h.DeleteAccount)
 	return h
 }
 
-
+func (h *AccountHandler) GetActiveAccounts(c *gin.Context) {
+	activeAccounts := h.accountService.FindAllActive()
+	c.JSON(http.StatusOK, activeAccounts)
+}
 
 func (h *AccountHandler) GetAccount(c *gin.Context) {
 	accountNumber := c.Param("accountNumber")
