@@ -16,12 +16,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	accountRepo , _ := repository.NewAccountRepository()
 
 	// Create UserService
 	userService := service.NewUserService(userRepo)
+	accountService := service.NewAccountService(accountRepo)
 
 	// Create UserHandler
 	handler.NewUserHandler(userService, r)
+	handler.NewAccountHandler(accountService, r)
 	
 	// Start the server
 	r.Run() // listen and serve on 0.0.0.0:8080
