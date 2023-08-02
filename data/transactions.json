@@ -4,7 +4,7 @@
         "txnumber" : "TX202308020001",
         "fromAccountNumber": "100001",
         "toAccountNumber": "100002",
-        "amount": 100.00,
+        "amount": 100,
         "timestamp": "2023-08-02T14:00:00Z",
         "description": "Transfer to account 100002",
         "txType": "transfer"
