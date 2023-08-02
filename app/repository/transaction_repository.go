@@ -46,7 +46,7 @@ func (r *transactionRepository) GetTransaction(id string) (model.Transaction, er
 			return tx, nil
 		}
 	}
-	return model.Transaction{}, errors.New("Transaction not found")
+	return model.Transaction{}, errors.New("transaction not found")
 }
 
 func (r *transactionRepository) CreateTransaction(tx model.Transaction) error {
