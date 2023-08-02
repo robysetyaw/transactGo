@@ -17,23 +17,23 @@ type transactionRepository struct {
 	transactions []model.Transaction
 }
 
-func NewTransactionRepository() TransactionRepository {
+func NewTransactionRepository() (TransactionRepository, error) {
 	repo := &transactionRepository{}
 
 	// Open the JSON file
 	file, err := os.Open("data/transactions.json")
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	defer file.Close()
 
 	// Decode the file into the transactions slice
 	err = json.NewDecoder(file).Decode(&repo.transactions)
 	if err != nil {
-		return nil
+		return nil,err
 	}
 
-	return repo
+	return repo, nil
 }
 
 func (r *transactionRepository) GetTransactions() ([]model.Transaction, error) {
