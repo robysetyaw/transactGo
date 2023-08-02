@@ -14,6 +14,7 @@ type AccountRepository interface {
 	Save(account *model.Account) error
 	CountAccounts() int
 	FindAllActive() []model.Account
+	FindByCustomerId(customerId string) (*model.Account, error)
 }
 
 type accountRepository struct {
@@ -142,4 +143,13 @@ func (r *accountRepository) FindAllActive() []model.Account {
 		}
 	}
 	return activeAccounts
+}
+
+func (r *accountRepository) FindByCustomerId(customerId string) (*model.Account, error) {
+	for _, account := range r.accounts {
+		if account.UserID == customerId {
+			return &account, nil
+		}
+	}
+	return nil, errors.New("Account not found for the given customer ID")
 }

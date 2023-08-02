@@ -42,6 +42,18 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		// Token is valid, extract the username
+		if claims, ok := token.Claims.(jwt.MapClaims); ok {
+			username, ok := claims["username"].(string)
+			if !ok {
+				c.JSON(http.StatusInternalServerError, response.NewResponse(http.StatusInternalServerError, "Internal server error", nil, nil, "Failed to get username"))
+				c.Abort()
+				return
+			}
+			// Add username to the context
+			c.Set("username", username)
+		}
+
 		// Token is valid
 		c.Next()
 	}
