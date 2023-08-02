@@ -1,11 +1,16 @@
 [
     {
         "id": 1,
-        "name": "merchant1"
+        "name": "merchant1",
+        "userId": "1",
+        "businessName": "Business 1",
+        "businessType": "Retail"
     },
     {
         "id": 2,
-        "name": "merchant2"
+        "name": "merchant2",
+        "userId": "2",
+        "businessName": "Business 2",
+        "businessType": "Wholesale"
     }
-
 ]
