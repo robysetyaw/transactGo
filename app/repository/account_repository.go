@@ -12,6 +12,8 @@ type AccountRepository interface {
 	Update(account *model.Account) error
 	Delete(account *model.Account) error
 	Save(account *model.Account) error
+	CountAccounts() int
+	FindAllActive() []model.Account
 }
 
 type accountRepository struct {
@@ -126,4 +128,18 @@ func (r *accountRepository) Save(account *model.Account) error {
 	}
 
 	return nil
+}
+
+func (r *accountRepository) CountAccounts() int {
+	return len(r.accounts)
+}
+
+func (r *accountRepository) FindAllActive() []model.Account {
+	var activeAccounts []model.Account
+	for _, account := range r.accounts {
+		if account.IsActive {
+			activeAccounts = append(activeAccounts, account)
+		}
+	}
+	return activeAccounts
 }
