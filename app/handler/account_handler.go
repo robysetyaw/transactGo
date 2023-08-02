@@ -70,7 +70,7 @@ func (h *AccountHandler) DeleteAccount(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	if err := h.accountService.Delete(account); err != nil {
+	if err := h.accountService.DeActive(account); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}

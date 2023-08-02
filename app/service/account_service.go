@@ -13,7 +13,7 @@ type AccountService interface {
 	FindByAccountNumber(accountNumber string) (*model.Account, error)
 	FindAllActive() []model.Account
 	Update(account *model.Account) error
-	Delete(account *model.Account) error
+	DeActive(account *model.Account) error
 	Save(account *model.Account) error
 }
 
@@ -39,8 +39,9 @@ func (s *accountService) Update(account *model.Account) error {
 	return s.repo.Update(account)
 }
 
-func (s *accountService) Delete(account *model.Account) error {
-	return s.repo.Delete(account)
+func (s *accountService) DeActive(account *model.Account) error {
+	account.IsActive = false
+	return s.repo.Update(account)
 }
 
 func (s *accountService) Save(account *model.Account) error {
@@ -50,6 +51,7 @@ func (s *accountService) Save(account *model.Account) error {
 		return errors.New("account already exist")
 	}
 	account.ID = uuid.New().String()
+	account.IsActive = true
 	return s.repo.Save(account)
 }
 
