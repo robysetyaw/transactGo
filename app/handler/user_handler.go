@@ -13,29 +13,38 @@ import (
 )
 
 type UserHandler struct {
-	service *service.UserService
+	service service.UserService
 }
 
-func NewUserHandler(s *service.UserService, r *gin.Engine) *UserHandler {
+type SafeUser struct {
+	ID       string `json:"id"`
+	Username string `json:"username"`
+}
+
+func NewUserHandler(s service.UserService, r *gin.Engine) *UserHandler {
 	handler := &UserHandler{service: s}
 
-	// Set up routes
-	r.GET("/users/:username", middleware.AuthMiddleware(),handler.GetUserByUsername)
-	r.PUT("/users/:username", middleware.AuthMiddleware(),handler.UpdateUser)
-	r.DELETE("/users/:username",middleware.AuthMiddleware(), handler.DeleteUser)
-	r.POST("/users",handler.AddUser)
+	r.GET("/users/:username", middleware.AuthMiddleware(), handler.GetUserByUsername)
+	r.PUT("/users/:username", middleware.AuthMiddleware(), handler.UpdateUser)
+	r.DELETE("/users/:username", middleware.AuthMiddleware(), handler.DeleteUser)
+	r.POST("/users", handler.AddUser)
 	r.POST("/login", handler.Login)
 	return handler
 }
 
 func (h *UserHandler) GetUserByUsername(c *gin.Context) {
 	username := c.Param("username")
-	user,_ := h.service.GetUserByUsername(username)
-	if user == nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+	user, err := h.service.GetUserByUsername(username)
+	if err != nil {
+		c.JSON(http.StatusNotFound, response.NewResponse(http.StatusNotFound, "Failed", "User not found", nil, ""))
 		return
 	}
-	c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK","Successfully get user", user, " "))
+
+	safeUser := SafeUser{
+		ID:       user.ID,
+		Username: user.Username,
+	}
+	c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK", "Successfully get user", safeUser, ""))
 }
 
 func (h *UserHandler) UpdateUser(c *gin.Context) {
@@ -43,44 +52,40 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 
     var user model.User
     if err := c.ShouldBindJSON(&user); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        c.JSON(http.StatusBadRequest, response.NewResponse(http.StatusBadRequest, "Failed", err.Error(), nil, ""))
         return
     }
 
     if err := h.service.UpdateUser(username, &user); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+        c.JSON(http.StatusInternalServerError, response.NewResponse(http.StatusInternalServerError, "Failed", "Failed to update user", nil, ""))
         return
     }
-    c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK","User with username " + username + " has been updated" ,user, " "))
+    c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK", "User with username " + username + " has been updated", nil, ""))
 }
-
 
 func (h *UserHandler) DeleteUser(c *gin.Context) {
 	username := c.Param("username")
 	
 	if err := h.service.DeleteUser(username); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
+		c.JSON(http.StatusInternalServerError, response.NewResponse(http.StatusInternalServerError, "Failed", "Failed to delete user", nil, ""))
 		return
 	}
-	c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK", "User with username " + username + " has been deleted", " "," "))
+	c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK", "User with username " + username + " has been deleted", nil, ""))
 }
 
 func (h *UserHandler) AddUser(c *gin.Context) {
-
     var user model.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        c.JSON(http.StatusBadRequest, response.NewResponse(http.StatusBadRequest, "Failed", err.Error(), nil, ""))
         return
     }
 
 	errors := make(map[string]string)
 
-	// validasi username
 	if len(user.Username) < 5 {
 		errors["username"] = "username must be 5 characters or more"
 	}
 
-	// validasi password
 	if len(user.Password) < 6 {
 		errors["password"] = "password must be 6 characters or more"
 	}
@@ -90,23 +95,28 @@ func (h *UserHandler) AddUser(c *gin.Context) {
 		return
 	}
 
+	safeUser := SafeUser{
+		ID:       user.ID,
+		Username: user.Username,
+	}
+
     if err := h.service.AddUser(&user); err != nil {
-        c.JSON(http.StatusInternalServerError, response.NewResponse(http.StatusInternalServerError, "Failed to add user", nil, nil, err.Error()))
+        c.JSON(http.StatusInternalServerError, response.NewResponse(http.StatusInternalServerError, "Failed", "Failed to add user", nil, ""))
         return
     }
-    c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK","Successfully added user", user, " "))
+    c.JSON(http.StatusOK, response.NewResponse(http.StatusOK, "OK", "Successfully added user", safeUser , ""))
 }
 
 func (h *UserHandler) Login(c *gin.Context) {
     var loginReq model.User
     if err := c.ShouldBindJSON(&loginReq); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        c.JSON(http.StatusBadRequest, response.NewResponse(http.StatusBadRequest, "Failed", err.Error(), nil, ""))
         return
     }
 
     user, err := h.service.Authenticate(loginReq.Username, loginReq.Password)
     if err != nil {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+        c.JSON(http.StatusUnauthorized, response.NewResponse(http.StatusUnauthorized, "Failed", "Invalid username or password", nil, ""))
         return
     }
 
@@ -115,10 +125,9 @@ func (h *UserHandler) Login(c *gin.Context) {
 		"exp":      time.Now().Add(time.Hour * 10).Unix(),
     })
 
-    // Sign and get the complete encoded token as a string using the secret
-    tokenString, err := token.SignedString([]byte("secret.puppey"))
+    tokenString, err := token.SignedString([]byte("secret.puppey")) 
     if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
+        c.JSON(http.StatusInternalServerError, response.NewResponse(http.StatusInternalServerError, "Failed", "Could not generate token", nil, ""))
         return
     }
 
