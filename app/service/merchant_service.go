@@ -5,7 +5,7 @@ import (
 	"transactgo/app/repository"
 )
 
-type MerchantServiceInterface interface {
+type MerchantService interface {
 	GetByID(id int) (*model.Merchant, error)
 	CreateMerchant(merchant *model.Merchant, username string) error
 	UpdateMerchant(merchant *model.Merchant) error
@@ -18,7 +18,7 @@ type merchantService struct {
 	userRepo repository.UserRepository
 }
 
-func NewMerchantService(repo repository.MerchantRepository, userRepo repository.UserRepository) MerchantServiceInterface {
+func NewMerchantService(repo repository.MerchantRepository, userRepo repository.UserRepository) MerchantService {
 	return &merchantService{
 		repo:     repo,
 		userRepo: userRepo,
