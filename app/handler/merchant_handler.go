@@ -36,7 +36,7 @@ func (h *MerchantHandler) GetMerchant(c *gin.Context) {
 
 	merchant, err := h.service.GetByID(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, response.NewResponse(http.StatusInternalServerError, "Failed", "Error occurred while fetching the merchant", nil, err.Error()))
+		c.JSON(http.StatusNotFound, response.NewResponse(http.StatusNotFound, "Failed", "Error occurred while fetching the merchant", nil, err.Error()))
 		return
 	}
 
