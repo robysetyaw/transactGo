@@ -91,6 +91,7 @@ Easier to manage and understand as it's organized around the business logic.
 
 ### Folder Structure / Folder Layers
 
+```plaintext
 /TransactGo
 ├── app
 │   ├── handler
