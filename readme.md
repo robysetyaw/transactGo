@@ -2,7 +2,7 @@
 
 # TransactGo - Simple Transaction API
 
-TransactGo is a simple REST API for handling transactions between users and merchants. This API allows users to register, login, and perform transactions, and merchants to manage their businesses. 
+TransactGo is a simple REST API for handling transactions between users and merchants. This API allows users to register, login, and perform transactions, and merchants to manage their businesses. Additionally, it includes features like generating unique JWT (JSON Web Tokens) for user authentication, creating unique UUIDs for identifying resources, and distinguishing transaction types through the TXNumber (transaction number) prefix.
 
 ## How to Use
 
