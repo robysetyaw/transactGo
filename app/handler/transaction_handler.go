@@ -10,16 +10,16 @@ import (
 )
 
 type TransactionHandler struct {
-	service *service.TransactionService
+	service service.TransactionService
 }
 
-func NewTransactionHandler(s *service.TransactionService, r *gin.Engine) *TransactionHandler {
+func NewTransactionHandler(s service.TransactionService, r *gin.Engine) *TransactionHandler {
 	handler := &TransactionHandler{service: s}
 
 	// Set up routes
-	r.GET("/transactions",middleware.AuthMiddleware(), handler.GetTransactions)
+	r.GET("/transactions", middleware.AuthMiddleware(), handler.GetTransactions)
 	r.GET("/transactions/:id", handler.GetTransaction)
-	r.POST("/transactions", middleware.AuthMiddleware() , handler.CreateTransaction)
+	r.POST("/transactions", middleware.AuthMiddleware(), handler.CreateTransaction)
 
 	return handler
 }
@@ -57,7 +57,8 @@ func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 		return
 	}
 
-	if  data, err := h.service.CreateTransaction(tx,user); err != nil {
+	data, err := h.service.CreateTransaction(tx, user)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create transaction"})
 		return
 	}
