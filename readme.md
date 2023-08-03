@@ -1,13 +1,8 @@
 # TransactGo
 
-## Description
-TransactGo is an application designed to provide an efficient, accessible transaction solution for users and merchants. This application's structure allows for a clear separation of functions and modules that are easy to understand, facilitating easy maintenance and further development.
+# TransactGo - Simple Transaction API
 
-## Main Features
-- User Management
-- Merchant Management
-- Authentication and Authorization
-- Transaction Management
+TransactGo is a simple REST API for handling transactions between users and merchants. This API allows users to register, login, and perform transactions, and merchants to manage their businesses. 
 
 ## How to Use
 
@@ -27,6 +22,35 @@ cd TransactGo
 ```bash
 go run app/main.go
 ```
+
+## Endpoints
+
+### User Registration and Login
+
+- Register: `POST /users`
+- Login: `POST /login`
+
+### User Management
+
+- Get User: `GET /users/:username`
+- Update User: `PUT /users/:username`
+- Delete User: `DELETE /users/:username`
+
+### Merchant Management
+
+- Create Merchant: `POST /merchants`
+- Get Merchant: `GET /merchants/:id`
+- Update Merchant: `PUT /merchants/:id`
+- Delete Merchant: `DELETE /merchants/:id`
+- Get All Merchants: `GET /merchants`
+
+### Transaction Management
+
+- Create Transaction: `POST /transactions`
+- Get Transaction: `GET /transactions/:id`
+- Get All Transactions: `GET /transactions`
+
+
 ## Architecture
 TransactGo is built using the Clean Architecture principles. These principles ensure separation of concerns where the software is divided into several circles with specific responsibilities:
 
