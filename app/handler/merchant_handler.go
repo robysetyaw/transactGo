@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"strconv"
+	"transactgo/app/middleware"
 	"transactgo/app/model"
 	"transactgo/app/model/response"
 	"transactgo/app/service"
@@ -17,11 +18,11 @@ type MerchantHandler struct {
 func NewMerchantHandler(s service.MerchantService, r *gin.Engine) *MerchantHandler {
 	handler := &MerchantHandler{service: s}
 
-	r.GET("/merchants/:id", handler.GetMerchant)
-	r.POST("/merchants", handler.CreateMerchant)
-	r.PUT("/merchants/:id", handler.UpdateMerchant)
-	r.DELETE("/merchants/:id", handler.DeleteMerchant)
-	r.GET("/merchants", handler.GetAllMerchants)
+	r.GET("/merchants/:id",middleware.AuthMiddleware() , handler.GetMerchant)
+	r.POST("/merchants",middleware.AuthMiddleware() ,handler.CreateMerchant)
+	r.PUT("/merchants/:id", middleware.AuthMiddleware(),handler.UpdateMerchant)
+	r.DELETE("/merchants/:id", middleware.AuthMiddleware(),handler.DeleteMerchant)
+	r.GET("/merchants", middleware.AuthMiddleware() ,handler.GetAllMerchants)
 
 	return handler
 }
