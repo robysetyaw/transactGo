@@ -10,10 +10,10 @@ import (
 )
 
 type MerchantHandler struct {
-	service *service.MerchantService
+	service service.MerchantService
 }
 
-func NewMerchantHandler(s *service.MerchantService, r *gin.Engine) *MerchantHandler {
+func NewMerchantHandler(s service.MerchantService, r *gin.Engine) *MerchantHandler {
 	handler := &MerchantHandler{service: s}
 
 	r.GET("/merchants/:id", handler.GetMerchant)
