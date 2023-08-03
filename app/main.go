@@ -20,7 +20,7 @@ func main() {
 	// Create UserService
 	userService := service.NewUserService(userRepo)
 	accountService := service.NewAccountService(accountRepo,userRepo)
-	merchantService := service.NewMerchantService(merchantRepo)
+	merchantService := service.NewMerchantService(merchantRepo, userRepo)
 	transactionService := service.NewTransactionService(transactionRepo, accountRepo, userRepo)
 
 	// Create UserHandler

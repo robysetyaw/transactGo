@@ -47,8 +47,14 @@ func (h *MerchantHandler) CreateMerchant(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	user, exists := c.Get("username")
 
-	if err := h.service.CreateMerchant(&merchant); err != nil {
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user"})
+		return
+	}
+	username := user.(string)
+	if err := h.service.CreateMerchant(&merchant, username ); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while creating the merchant"})
 		return
 	}
