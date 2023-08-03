@@ -29,7 +29,6 @@ go run app/main.go
 
 - Register: `POST /users`
 - Login: `POST /login`
-- User Registration (`POST /users`)
 
 ### payload register & login
 ```json
