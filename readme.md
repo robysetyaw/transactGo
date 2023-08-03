@@ -29,6 +29,30 @@ go run app/main.go
 
 - Register: `POST /users`
 - Login: `POST /login`
+- User Registration (`POST /users`)
+
+### payload register & login
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
+
+### response login
+```json
+{
+    "token": "jwt.token.here"
+}
+```
+### response register
+``` json 
+{
+    "code": 200,
+    "status": "OK",
+    "message": "Successfully added user"
+}
+```
 
 ### User Management
 
