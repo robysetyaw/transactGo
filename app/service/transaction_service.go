@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"time"
 	"transactgo/app/model"
@@ -41,6 +42,10 @@ func (s *transactionService) CreateTransaction(tx model.Transaction, username an
 	usernameString := username.(string)
 	userRn , _ := s.userRepo.FindByUsername(usernameString)
 	senderAccount, _ := s.accountRepo.FindByCustomerId(userRn.ID)
+	if senderAccount.Balance< tx.Amount {
+		return tx, errors.New("insufficient balance")
+	}
+
 	receiverAccount, _ := s.accountRepo.FindByAccountNumber(tx.ToAccountNumber)
 	if receiverAccount.IsMerchant {
 		tx.TxType = "payment"
