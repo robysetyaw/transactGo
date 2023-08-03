@@ -18,11 +18,11 @@ func NewAccountHandler(accountService service.AccountService, r *gin.Engine) *Ac
 	h := &AccountHandler{
 		accountService: accountService,
 	}
-	r.GET("/accounts/:accountNumber", h.GetAccount)
-	r.GET("/accounts", h.GetActiveAccounts)
+	r.GET("/accounts/:accountNumber", middleware.AuthMiddleware(),h.GetAccount)
+	r.GET("/accounts", middleware.AuthMiddleware(),h.GetActiveAccounts)
 	r.POST("/accounts",middleware.AuthMiddleware() , h.CreateAccount)
-	r.PUT("/accounts/:accountNumber", h.UpdateAccount)
-	r.DELETE("/accounts/:accountNumber", h.DeleteAccount)
+	r.PUT("/accounts/:accountNumber", middleware.AuthMiddleware(),h.UpdateAccount)
+	r.DELETE("/accounts/:accountNumber", middleware.AuthMiddleware(),h.DeleteAccount)
 	return h
 }
 
