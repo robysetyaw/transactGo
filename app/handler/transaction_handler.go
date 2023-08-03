@@ -49,14 +49,18 @@ func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	user, exists := c.Get("username")
+
 	if !exists {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user"})
 		return
 	}
-	if err := h.service.CreateTransaction(tx,user); err != nil {
+
+	if  data, err := h.service.CreateTransaction(tx,user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create transaction"})
 		return
 	}
-	c.JSON(http.StatusCreated, tx)
+
+	c.JSON(http.StatusCreated, data)
 }

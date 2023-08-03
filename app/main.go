@@ -19,7 +19,7 @@ func main() {
 
 	// Create UserService
 	userService := service.NewUserService(userRepo)
-	accountService := service.NewAccountService(accountRepo)
+	accountService := service.NewAccountService(accountRepo,userRepo)
 	merchantService := service.NewMerchantService(merchantRepo)
 	transactionService := service.NewTransactionService(transactionRepo, accountRepo, userRepo)
 

@@ -9,33 +9,39 @@ import (
 	"github.com/google/uuid"
 )
 
-type TransactionService struct {
-	transactionRepo repository.TransactionRepository
-	accountRepo      repository.AccountRepository
-	userRepo         repository.UserRepository
+type TransactionService interface {
+	GetTransactions() ([]model.Transaction, error)
+	GetTransaction(id string) (model.Transaction, error)
+	CreateTransaction(tx model.Transaction, username any) (model.Transaction, error)
 }
 
-func NewTransactionService(transactionRepo repository.TransactionRepository, accountRepo repository.AccountRepository, userRepo repository.UserRepository) *TransactionService {
-	return &TransactionService{
+type transactionService struct {
+	transactionRepo repository.TransactionRepository
+	accountRepo     repository.AccountRepository
+	userRepo        repository.UserRepository
+}
+
+func NewTransactionService(transactionRepo repository.TransactionRepository, accountRepo repository.AccountRepository, userRepo repository.UserRepository) TransactionService {
+	return &transactionService{
 		transactionRepo: transactionRepo,
 		accountRepo:     accountRepo,
 		userRepo:        userRepo,
 	}
 }
 
-func (s *TransactionService) GetTransactions() ([]model.Transaction, error) {
+func (s *transactionService) GetTransactions() ([]model.Transaction, error) {
 	return s.transactionRepo.GetTransactions()
 }
 
-func (s *TransactionService) GetTransaction(id string) (model.Transaction, error) {
+func (s *transactionService) GetTransaction(id string) (model.Transaction, error) {
 	return s.transactionRepo.GetTransaction(id)
 }
 
-func (s *TransactionService) CreateTransaction(tx model.Transaction, username any) error {
+func (s *transactionService) CreateTransaction(tx model.Transaction, username any) (model.Transaction ,error) {
 	usernameString := username.(string)
 	userRn , _ := s.userRepo.FindByUsername(usernameString)
 	senderAccount, _ := s.accountRepo.FindByCustomerId(userRn.ID)
-	receiverAccount, _ := s.accountRepo.FindByAccountNumber(tx.FromAccountNumber)
+	receiverAccount, _ := s.accountRepo.FindByAccountNumber(tx.ToAccountNumber)
 	if receiverAccount.IsMerchant {
 		tx.TxType = "payment"
 	}
@@ -46,15 +52,13 @@ func (s *TransactionService) CreateTransaction(tx model.Transaction, username an
 	tx.ID = uuid.New().String()
 	tx.Timestamp = time.Now()
 
-	txNumber, err := s.generateTxNumber(tx.TxType)
-	if err != nil {
-		return err
-	}
+	txNumber, _ := s.generateTxNumber(tx.TxType)
 	tx.TxNumber = txNumber
-	return s.transactionRepo.CreateTransaction(tx)
+	s.transactionRepo.CreateTransaction(tx)
+	return tx,nil
 }
 
-func (s *TransactionService) generateTxNumber(txType string) (string, error) {
+func (s *transactionService) generateTxNumber(txType string) (string, error) {
 
 	txs, err := s.transactionRepo.GetTransactions()
 	if err != nil {

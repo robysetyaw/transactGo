@@ -14,16 +14,18 @@ type AccountService interface {
 	FindAllActive() []model.Account
 	Update(account *model.Account) error
 	DeActive(account *model.Account) error
-	Save(account *model.Account) error
+	Save(account *model.Account, username string) error
 }
 
 type accountService struct {
 	repo repository.AccountRepository
+	userRepo repository.UserRepository
 }
 
-func NewAccountService(repo repository.AccountRepository) AccountService {
+func NewAccountService(repo repository.AccountRepository, userRepo repository.UserRepository) AccountService {
 	return &accountService{
 		repo: repo,
+		userRepo: userRepo,
 	}
 }
 
@@ -44,7 +46,9 @@ func (s *accountService) DeActive(account *model.Account) error {
 	return s.repo.Update(account)
 }
 
-func (s *accountService) Save(account *model.Account) error {
+func (s *accountService) Save(account *model.Account, username string) error {
+	user, _ := s.userRepo.FindByUsername(username)
+	account.UserID = user.ID
 	account.AccountNumber = s.generateAccountNumber()
 	isExist,_ := s.repo.FindByAccountNumber(account.AccountNumber)
 	if isExist != nil {

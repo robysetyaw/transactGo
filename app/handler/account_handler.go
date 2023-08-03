@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"transactgo/app/middleware"
 	"transactgo/app/model"
 	"transactgo/app/service"
 
@@ -18,7 +19,7 @@ func NewAccountHandler(accountService service.AccountService, r *gin.Engine) *Ac
 	}
 	r.GET("/accounts/:accountNumber", h.GetAccount)
 	r.GET("/accounts", h.GetActiveAccounts)
-	r.POST("/accounts", h.CreateAccount)
+	r.POST("/accounts",middleware.AuthMiddleware() , h.CreateAccount)
 	r.PUT("/accounts/:accountNumber", h.UpdateAccount)
 	r.DELETE("/accounts/:accountNumber", h.DeleteAccount)
 	return h
@@ -45,7 +46,13 @@ func (h *AccountHandler) CreateAccount(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	h.accountService.Save(&newAccount)
+	user, exists := c.Get("username")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user"})
+		return
+	}
+	userString := user.(string)
+	h.accountService.Save(&newAccount,userString)
 	c.JSON(http.StatusCreated, newAccount)
 }
 
