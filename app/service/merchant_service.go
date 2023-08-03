@@ -5,36 +5,44 @@ import (
 	"transactgo/app/repository"
 )
 
-type MerchantService struct {
-	repo repository.MerchantRepository
+type MerchantServiceInterface interface {
+	GetByID(id int) (*model.Merchant, error)
+	CreateMerchant(merchant *model.Merchant, username string) error
+	UpdateMerchant(merchant *model.Merchant) error
+	DeleteMerchant(id int) error
+	GetAllMerchants() ([]model.Merchant, error)
+}
+
+type merchantService struct {
+	repo     repository.MerchantRepository
 	userRepo repository.UserRepository
 }
 
-func NewMerchantService(repo repository.MerchantRepository, userRepo repository.UserRepository) *MerchantService {
-	return &MerchantService{
-		repo: repo,
+func NewMerchantService(repo repository.MerchantRepository, userRepo repository.UserRepository) MerchantServiceInterface {
+	return &merchantService{
+		repo:     repo,
 		userRepo: userRepo,
 	}
 }
 
-func (s *MerchantService) GetByID(id int) (*model.Merchant, error) {
+func (s *merchantService) GetByID(id int) (*model.Merchant, error) {
 	return s.repo.GetByID(id)
 }
 
-func (s *MerchantService) CreateMerchant(merchant *model.Merchant, username string) error {
+func (s *merchantService) CreateMerchant(merchant *model.Merchant, username string) error {
 	user, _ := s.userRepo.FindByUsername(username)
 	merchant.UserID = user.ID
 	return s.repo.Save(merchant)
 }
 
-func (s *MerchantService) UpdateMerchant(merchant *model.Merchant) error {
+func (s *merchantService) UpdateMerchant(merchant *model.Merchant) error {
 	return s.repo.Update(merchant)
 }
 
-func (s *MerchantService) DeleteMerchant(id int) error {
+func (s *merchantService) DeleteMerchant(id int) error {
 	return s.repo.Delete(id)
 }
 
-func (s *MerchantService) GetAllMerchants() ([]model.Merchant, error) {
+func (s *merchantService) GetAllMerchants() ([]model.Merchant, error) {
 	return s.repo.FindAll()
 }
