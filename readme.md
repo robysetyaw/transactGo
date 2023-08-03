@@ -78,11 +78,11 @@ go run app/main.go
 ## Architecture
 TransactGo is built using the Clean Architecture principles. These principles ensure separation of concerns where the software is divided into several circles with specific responsibilities:
 
-Handlers: Define how the HTTP request for a specific route will be handled.
-Middleware: Handle common tasks across different handlers like authentication.
-Models: Define the basic structure of data.
-Repositories: Handle the data layer, provide methods to interact with the data source.
-Services: Encapsulate business logic.
+- Handlers: Define how the HTTP request for a specific route will be handled.
+- Middleware: Handle common tasks across different handlers like authentication.
+- Models: Define the basic structure of data.
+- Repositories: Handle the data layer, provide methods to interact with the data source.
+- Services: Encapsulate business logic.
 This design makes our application:
 
 Independent of UI, Database, Frameworks, and External agencies.
